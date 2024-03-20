@@ -1,0 +1,13 @@
+[package]
+name = "rrm"
+version = "0.1.0"
+edition = "2021"
+
+[profile.release-lto]
+inherits = "release"
+lto = true
+
+[dependencies]
+clap = { version = "4.5.3", features = ["derive"] }
+normalize-path = "0.2.1"
+walkdir = "2.5.0"
