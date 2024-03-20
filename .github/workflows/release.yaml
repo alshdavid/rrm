@@ -1,0 +1,149 @@
+name: Release
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+on: 
+  push:
+    branches:
+      - "main"
+
+jobs:
+  linux-amd64:
+    name: "🐥 Linux AMD64"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sudo apt-get update
+          rustup target add x86_64-unknown-linux-gnu
+          cargo build --profile release --target x86_64-unknown-linux-gnu
+          cd target/x86_64-unknown-linux-gnu/release
+          tar -czvf linux-amd64.tar.gz rrm
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}.tar.gz
+          path: target/x86_64-unknown-linux-gnu/release/linux-amd64.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+
+  linux-arm64:
+    name: "🐥 Linux ARM64"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sudo apt-get update
+          sudo apt-get install gcc-aarch64-linux-gnu build-essential
+          export CC=aarch64-linux-gnu-gcc
+          rustup target add aarch64-unknown-linux-gnu
+          aarch64-linux-gnu-gcc --version
+          cargo build --profile release --target aarch64-unknown-linux-gnu
+          cd target/aarch64-unknown-linux-gnu/release
+          tar -czvf linux-arm64.tar.gz rrm
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}.tar.gz
+          path: target/aarch64-unknown-linux-gnu/release/linux-arm64.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+
+  macos-amd64:
+    name: "🍎 MacOS AMD64"
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          rustup target add x86_64-apple-darwin
+          cargo build --profile release --target x86_64-apple-darwin
+          cd target/x86_64-apple-darwin/release
+          tar -czvf macos-amd64.tar.gz rrm
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}.tar.gz
+          path: target/x86_64-apple-darwin/release/macos-amd64.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+      
+  macos-arm64:
+    name: "🍎 MacOS ARM64"
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          rustup target add aarch64-apple-darwin
+          cargo build --profile release --target aarch64-apple-darwin
+          cd target/aarch64-apple-darwin/release
+          tar -czvf macos-arm64.tar.gz rrm
+      
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}.tar.gz
+          path: target/aarch64-apple-darwin/release/macos-arm64.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+
+  windows-amd64:
+    name: "🟦 Windows AMD64"
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          rustup target add x86_64-pc-windows-msvc
+          cargo build --profile release --target x86_64-pc-windows-msvc
+          cd target/x86_64-pc-windows-msvc/release
+          tar -czvf windows-amd64.tar.gz rrm.exe
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}.tar.gz
+          path: target/x86_64-pc-windows-msvc/release/windows-amd64.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+
+  windows-arm64:
+    name: "🟦 Windows ARM64"
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          rustup target add aarch64-pc-windows-msvc
+          cargo build --profile release --target aarch64-pc-windows-msvc
+          cd target/aarch64-pc-windows-msvc/release
+          tar -czvf windows-arm64.tar.gz rrm.exe
+      
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}.tar.gz
+          path: target/aarch64-pc-windows-msvc/release/windows-arm64.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+
+  publish-github-release:
+    name: "🔄 Publish Github Release"
+    runs-on: ubuntu-latest
+    needs: [linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+      - name: Publish` Github Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="$(date -u +"v%Y.%m.%d.%H%M").${GITHUB_SHA::4}"
+          echo "Tag: ${TAG}"
+
+          gh release create $TAG  --draft --notes "Automatically built binaries"
+          
+          gh release upload $TAG linux-amd64.tar.gz/linux-amd64.tar.gz
+          gh release upload $TAG linux-arm64.tar.gz/linux-arm64.tar.gz
+          gh release upload $TAG macos-amd64.tar.gz/macos-amd64.tar.gz
+          gh release upload $TAG macos-arm64.tar.gz/macos-arm64.tar.gz
+          gh release upload $TAG windows-amd64.tar.gz/windows-amd64.tar.gz
+          gh release upload $TAG windows-arm64.tar.gz/windows-arm64.tar.gz
+          
+          gh release edit $TAG --draft=false
