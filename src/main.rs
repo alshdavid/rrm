@@ -19,8 +19,11 @@ struct Commands {
   #[arg(short = 'F', long = "file")]
   file_names: Vec<String>,
   /// A directory name to look for
-  #[arg(short = 'd', long = "dir")]
+  #[arg(short = 'D', long = "dir")]
   dir_names: Vec<String>,
+  /// Exclude directories with name matching
+  #[arg(short = 'e', long = "exclude")]
+  exclude_names: Vec<String>,
   /// Delete without asking
   #[arg(long = "force")]
   force: bool,
@@ -40,6 +43,7 @@ fn main() {
     return;
   }
 
+  let lookup_exclude = HashSet::<String>::from_iter(cmd.exclude_names);
   let mut lookup_any = HashSet::<String>::new();
   let mut lookup_dirs = HashSet::<String>::new();
   let mut lookup_files = HashSet::<String>::new();
@@ -62,6 +66,13 @@ fn main() {
     lookup_any.insert(item.clone());
   }
 
+  if lookup_exclude.len() != 0 {
+    println!("Excluding");
+    for item in &lookup_exclude {
+      println!("  {}", item);
+    }
+  }
+
   let mut matches = HashSet::<PathBuf>::new();
 
   println!("");
@@ -72,6 +83,10 @@ fn main() {
     .filter_entry(|entry| {
       let entry_path = entry.path();
       let entry_name = entry.file_name().to_str().unwrap();
+      
+      if lookup_exclude.contains(entry_name) {
+        return false;
+      }
       if entry_path.is_dir()
         && (lookup_any.contains(entry_name) || lookup_dirs.contains(entry_name))
       {
@@ -90,7 +105,7 @@ fn main() {
     .for_each(|_| {});
 
   println!("");
-  print!("Delete matches? [y/N] ");
+  print!("Delete matches? ({} found) [y/N] ", matches.len());
   let mut line = String::new();
   let _ = std::io::stdout().flush();
   std::io::stdin().read_line(&mut line).unwrap();
