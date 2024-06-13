@@ -67,7 +67,6 @@ runs:
       run: |
         source .github/actions/setup-env/setup-env.bash
         export CC=aarch64-linux-gnu-gcc
-        export MACH_SKIP_POST_INSTALL="true"
 
         sudo apt-get update
         sudo apt-get install gcc-aarch64-linux-gnu build-essential
