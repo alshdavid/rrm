@@ -7,7 +7,7 @@ While you can achieve this in `bash` with a combination of `find` and `rm -rf`, 
 ## Example
 
 ```
-rrm -f node_modules -f ./.DS_Store ~/Development
+rrm -f node_modules -f .DS_Store ~/Development
 ```
 
 Outputs:
