@@ -70,16 +70,16 @@ jobs:
           echo "Tag: ${TAG}"
 
           ls -l 
-          ls -l rrm-linux-amd64.tar.gz
+          ls -l rrm-linux-amd64
 
           gh release create $TAG  --draft --notes "Automatically built binaries"
           gh release edit $TAG --title "🚀 Latest"
 
-          gh release upload $TAG rrm-linux-amd64.tar.gz/rrm-linux-amd64.tar.gz
-          gh release upload $TAG rrm-linux-arm64.tar.gz/rrm-linux-arm64.tar.gz
-          gh release upload $TAG rrm-macos-amd64.tar.gz/rrm-macos-amd64.tar.gz
-          gh release upload $TAG rrm-macos-arm64.tar.gz/rrm-macos-arm64.tar.gz
-          gh release upload $TAG rrm-windows-amd64.tar.gz/rrm-windows-amd64.tar.gz
-          gh release upload $TAG rrm-windows-arm64.tar.gz/rrm-windows-arm64.tar.gz
+          gh release upload $TAG rrm-linux-amd64/rrm-linux-amd64.tar.gz
+          gh release upload $TAG rrm-linux-arm64/rrm-linux-arm64.tar.gz
+          gh release upload $TAG rrm-macos-amd64/rrm-macos-amd64.tar.gz
+          gh release upload $TAG rrm-macos-arm64/rrm-macos-arm64.tar.gz
+          gh release upload $TAG rrm-windows-amd64/rrm-windows-amd64.tar.gz
+          gh release upload $TAG rrm-windows-arm64/rrm-windows-arm64.tar.gz
           
           gh release edit $TAG --draft=false
