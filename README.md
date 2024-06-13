@@ -2,12 +2,7 @@
 
 This is a cross-platform utility that will recursively search a directory for files & folders with a specific name or names, find all occurrences then prompt you to delete them.
 
-```
-rrm -f node_modules ./my-project
-rrm -f node_modules -f ./.DS_Store ./my-project
-```
-
-While you can achieve this in `bash` with a combination of `find` and `rm -rf`, The motivation for this tool is to use the same syntax for this operation across all operating systems and shell environments.
+While you can achieve this in `bash` with a combination of `find` and `rm -rf`, the motivation for this tool is to use the same syntax for this operation across all operating systems and shell environments.
 
 ## Example
 
