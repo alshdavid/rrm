@@ -9,11 +9,11 @@ runs:
       shell: bash
       env:
         NODE_VERSION: ${{ inputs.version }}
-      run: "bash .github/actions/setup-rust/install-rust.bash"
+      run: "bash .github/actions/setup-rust/install.bash"
 
     - name: "Install Rust" 
-      if: ${{ runner.os == 'Windows' && runner.arch == 'X64' }}
+      if: ${{ runner.os == 'Windows' }}
       shell: powershell
       env:
         NODE_VERSION: ${{ inputs.version }}
-      run: . .github/actions/setup-rust/install-rust.ps1
+      run: . .github/actions/setup-rust/install.ps1
