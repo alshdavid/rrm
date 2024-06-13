@@ -1,23 +1,24 @@
-# Recursively Find and Remove
+# Recursively Find and Remove 👓🔥
 
-This utility will search a directory for files / folders using a name specifier and delete them.
+This is a cross-platform utility that will recursively search a directory for files & folders with a specific name or names, find all occurrences then prompt you to delete them.
 
 ```
 rrm -f node_modules ./my-project
 rrm -f node_modules -f ./.DS_Store ./my-project
 ```
 
+While you can achieve this in `bash` with a combination of `find` and `rm -rf`, The motivation for this tool is to use the same syntax for this operation across all operating systems and shell environments.
+
 ## Example
 
 ```
-cd /home/alshdavid/Development
-rrm -f node_modules -f ./.DS_Store ./my-project
+rrm -f node_modules -f ./.DS_Store ~/Development
 ```
 
 Outputs:
 ```
 Looking within:
-  /home/alshdavid/Development/my-project
+  /home/alshdavid/Development
 
 Looking for:
   node_modules
@@ -32,4 +33,25 @@ Delete matches? [y/N] y
   /home/alshdavid/Development/my-project/another_one/.DS_Store
   /home/alshdavid/Development/my-project/.DS_Store
   /home/alshdavid/Development/my-project/node_modules
+```
+
+# Development 🧩
+
+## Prerequisite Tools
+
+- [Rust](https://rustup.rs/)
+- [Just](https://github.com/casey/just)
+
+## Building
+
+```
+just build
+target=release just build
+```
+
+## Running Development Build
+
+```
+just run
+just run -f node_modules ~/Development
 ```

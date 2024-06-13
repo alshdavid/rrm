@@ -69,9 +69,6 @@ jobs:
           TAG="$(date -u +"v%Y.%m.%d.%H%M").${GITHUB_SHA::4}"
           echo "Tag: ${TAG}"
 
-          ls -l 
-          ls -l rrm-linux-amd64
-
           gh release create $TAG  --draft --notes "Automatically built binaries"
           gh release edit $TAG --title "🚀 Latest"
 

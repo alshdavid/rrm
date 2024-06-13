@@ -60,7 +60,7 @@ build:
   @mkdir -p "{{out_dir}}"
   cargo build {{profile_cargo}} {{target_cargo}}
   @cp "./target/.cargo/{{target}}/{{profile}}/rrm" "{{out_dir}}"
-  # ln -rs "{{out_dir}}" "{{out_dir_link}}"
+  @# ln -rs "{{out_dir}}" "{{out_dir_link}}"
 
 [windows]
 build:
@@ -69,7 +69,7 @@ build:
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}"  | Out-Null
   cargo build {{profile_cargo}} {{target_cargo}}
   Copy-Item ".\target\.cargo\{{target}}\{{profile}}\rrm.exe" -Destination "{{out_dir}}" | Out-Null
-  # New-Item -Path "{{out_dir}}" -ItemType SymbolicLink -Value "{{out_dir_link}}"
+  @# New-Item -Path "{{out_dir}}" -ItemType SymbolicLink -Value "{{out_dir_link}}"
 
 [unix]
 run *ARGS:
