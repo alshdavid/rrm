@@ -66,16 +66,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ls -l .
-          ls -l artifacts
-          ls -l artifacts/rrm-linux-amd64
-
-          exit 0
           TAG="$(date -u +"v%Y.%m.%d.%H%M").${GITHUB_SHA::4}"
           echo "Tag: ${TAG}"
 
           gh release create $TAG  --draft --notes "Automatically built binaries"
-          
+          gh release edit $TAG --title "🚀 Latest"
+
           gh release upload $TAG linux-amd64.tar.gz/linux-amd64.tar.gz
           gh release upload $TAG linux-arm64.tar.gz/linux-arm64.tar.gz
           gh release upload $TAG macos-amd64.tar.gz/macos-amd64.tar.gz
