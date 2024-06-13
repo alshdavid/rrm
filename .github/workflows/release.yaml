@@ -123,27 +123,27 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  publish-github-release:
-    name: "🔄 Publish Github Release"
-    runs-on: ubuntu-latest
-    needs: [linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-      - name: Publish` Github Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          TAG="$(date -u +"v%Y.%m.%d.%H%M").${GITHUB_SHA::4}"
-          echo "Tag: ${TAG}"
+  # publish-github-release:
+  #   name: "🔄 Publish Github Release"
+  #   runs-on: ubuntu-latest
+  #   needs: [linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/download-artifact@v4
+  #     - name: Publish` Github Release
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       run: |
+  #         TAG="$(date -u +"v%Y.%m.%d.%H%M").${GITHUB_SHA::4}"
+  #         echo "Tag: ${TAG}"
 
-          gh release create $TAG  --draft --notes "Automatically built binaries"
+  #         gh release create $TAG  --draft --notes "Automatically built binaries"
           
-          gh release upload $TAG linux-amd64.tar.gz/linux-amd64.tar.gz
-          gh release upload $TAG linux-arm64.tar.gz/linux-arm64.tar.gz
-          gh release upload $TAG macos-amd64.tar.gz/macos-amd64.tar.gz
-          gh release upload $TAG macos-arm64.tar.gz/macos-arm64.tar.gz
-          gh release upload $TAG windows-amd64.tar.gz/windows-amd64.tar.gz
-          gh release upload $TAG windows-arm64.tar.gz/windows-arm64.tar.gz
+  #         gh release upload $TAG linux-amd64.tar.gz/linux-amd64.tar.gz
+  #         gh release upload $TAG linux-arm64.tar.gz/linux-arm64.tar.gz
+  #         gh release upload $TAG macos-amd64.tar.gz/macos-amd64.tar.gz
+  #         gh release upload $TAG macos-arm64.tar.gz/macos-arm64.tar.gz
+  #         gh release upload $TAG windows-amd64.tar.gz/windows-amd64.tar.gz
+  #         gh release upload $TAG windows-arm64.tar.gz/windows-arm64.tar.gz
           
-          gh release edit $TAG --draft=false
+  #         gh release edit $TAG --draft=false
