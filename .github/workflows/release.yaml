@@ -72,11 +72,11 @@ jobs:
           gh release create $TAG  --draft --notes "Automatically built binaries"
           gh release edit $TAG --title "🚀 Latest"
 
-          gh release upload $TAG linux-amd64.tar.gz/linux-amd64.tar.gz
-          gh release upload $TAG linux-arm64.tar.gz/linux-arm64.tar.gz
-          gh release upload $TAG macos-amd64.tar.gz/macos-amd64.tar.gz
-          gh release upload $TAG macos-arm64.tar.gz/macos-arm64.tar.gz
-          gh release upload $TAG windows-amd64.tar.gz/windows-amd64.tar.gz
-          gh release upload $TAG windows-arm64.tar.gz/windows-arm64.tar.gz
+          gh release upload $TAG rrm-linux-amd64.tar.gz/rrm-linux-amd64.tar.gz
+          gh release upload $TAG rrm-linux-arm64.tar.gz/rrm-linux-arm64.tar.gz
+          gh release upload $TAG rrm-macos-amd64.tar.gz/rrm-macos-amd64.tar.gz
+          gh release upload $TAG rrm-macos-arm64.tar.gz/rrm-macos-arm64.tar.gz
+          gh release upload $TAG rrm-windows-amd64.tar.gz/rrm-windows-amd64.tar.gz
+          gh release upload $TAG rrm-windows-arm64.tar.gz/rrm-windows-arm64.tar.gz
           
           gh release edit $TAG --draft=false
