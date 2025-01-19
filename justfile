@@ -1,5 +1,6 @@
 set windows-shell := ["pwsh", "-NoLogo", "-NoProfileLoadTime", "-Command"]
 
+project_name := "rrm"
 profile := env_var_or_default("profile", "debug")
 
 os := \
@@ -22,9 +23,9 @@ else \
 
 target := \
 if \
-  os + arch == "linuxamd64" { "x86_64-unknown-linux-gnu" } \
+  os + arch == "linuxamd64" { "x86_64-unknown-linux-musl" } \
 else if \
-  os + arch == "linuxarm64" { "aarch64-unknown-linux-gnu" } \
+  os + arch == "linuxarm64" { "aarch64-unknown-linux-musl" } \
 else if \
   os + arch == "macosamd64" { "x86_64-apple-darwin" } \
 else if\
@@ -59,7 +60,7 @@ build:
   @rm -rf "{{out_dir_link}}"
   @mkdir -p "{{out_dir}}"
   cargo build {{profile_cargo}} {{target_cargo}}
-  @cp "./target/.cargo/{{target}}/{{profile}}/rrm" "{{out_dir}}"
+  @cp "./target/.cargo/{{target}}/{{profile}}/{{project_name}}" "{{out_dir}}"
   @# ln -rs "{{out_dir}}" "{{out_dir_link}}"
 
 [windows]
@@ -68,21 +69,31 @@ build:
   @if (Test-Path {{out_dir_link}}) { Remove-Item -Recurse -Force {{out_dir_link}} | Out-Null }
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}"  | Out-Null
   cargo build {{profile_cargo}} {{target_cargo}}
-  Copy-Item ".\target\.cargo\{{target}}\{{profile}}\rrm.exe" -Destination "{{out_dir}}" | Out-Null
+  Copy-Item ".\target\.cargo\{{target}}\{{profile}}\{{project_name}}.exe" -Destination "{{out_dir}}" | Out-Null
   @# New-Item -Path "{{out_dir}}" -ItemType SymbolicLink -Value "{{out_dir_link}}"
 
 [unix]
 run *ARGS:
   just build
-  {{out_dir}}/rrm {{ARGS}}
+  {{out_dir}}/{{project_name}} {{ARGS}}
 
 [windows]
 run *ARGS:
   just build
-  {{out_dir}}/rrm.exe {{ARGS}}
+  {{out_dir}}/{{project_name}}.exe {{ARGS}}
 
 test:
   cargo test
 
+lint:
+  cargo +nightly clippy -- --deny "warnings"
+
+lint_fix *ARGS:
+  cargo +nightly clippy --fix --allow-staged -- --deny "warnings"
+
 fmt:
+  cargo +nightly fmt --check
+
+fmt_fix *ARGS:
   cargo +nightly fmt
+
