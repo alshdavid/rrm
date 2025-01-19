@@ -38,7 +38,7 @@ fn main() {
       .normalize();
   }
 
-  if cmd.find_names.len() == 0 && cmd.dir_names.len() == 0 && cmd.file_names.len() == 0 {
+  if cmd.find_names.is_empty() && cmd.dir_names.is_empty() && cmd.file_names.is_empty() {
     Commands::command().print_help().unwrap();
     return;
   }
@@ -51,7 +51,7 @@ fn main() {
   println!("Looking within:");
   println!("  {}", cmd.target_dir.to_str().unwrap());
 
-  println!("");
+  println!();
   println!("Looking for:");
   for item in &cmd.dir_names {
     println!("  [DIR] {}", item);
@@ -66,7 +66,7 @@ fn main() {
     lookup_any.insert(item.clone());
   }
 
-  if lookup_exclude.len() != 0 {
+  if !lookup_exclude.is_empty() {
     println!("Excluding");
     for item in &lookup_exclude {
       println!("  {}", item);
@@ -75,7 +75,7 @@ fn main() {
 
   let mut matches = HashSet::<PathBuf>::new();
 
-  println!("");
+  println!();
   println!("Found:");
 
   WalkDir::new(&cmd.target_dir)
@@ -83,7 +83,7 @@ fn main() {
     .filter_entry(|entry| {
       let entry_path = entry.path();
       let entry_name = entry.file_name().to_str().unwrap();
-      
+
       if lookup_exclude.contains(entry_name) {
         return false;
       }
@@ -100,11 +100,11 @@ fn main() {
         println!("  {}", entry_path.to_str().unwrap());
         matches.insert(entry_path.to_path_buf());
       }
-      return true;
+      true
     })
     .for_each(|_| {});
 
-  println!("");
+  println!();
   print!("Delete matches? ({} found) [y/N] ", matches.len());
   let mut line = String::new();
   let _ = std::io::stdout().flush();
@@ -119,10 +119,10 @@ fn main() {
   for item in matches.iter() {
     println!("  {}", item.to_str().unwrap());
     if item.is_dir() {
-      fs::remove_dir_all(&item).unwrap();
+      fs::remove_dir_all(item).unwrap();
     }
     if item.is_file() {
-      fs::remove_file(&item).unwrap();
+      fs::remove_file(item).unwrap();
     }
   }
 }
