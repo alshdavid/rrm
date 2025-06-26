@@ -1,5 +1,3 @@
-set windows-shell := ["pwsh", "-NoLogo", "-NoProfileLoadTime", "-Command"]
-
 project_name := "rrm"
 profile := env_var_or_default("profile", "debug")
 
@@ -51,10 +49,15 @@ else if \
 else \
   { "--target " + target } 
 
+bin_name := \
+  if \
+    os == "windows" { project_name + ".exe" } \
+  else \
+    { project_name }
+
 out_dir :=  join(justfile_directory(), "target", os + "-" + arch, profile)
 out_dir_link :=  join(justfile_directory(), "target", profile)
 
-[unix]
 build:
   @rm -rf "{{out_dir}}"
   @rm -rf "{{out_dir_link}}"
@@ -63,37 +66,46 @@ build:
   @cp "./target/.cargo/{{target}}/{{profile}}/{{project_name}}" "{{out_dir}}"
   @# ln -rs "{{out_dir}}" "{{out_dir_link}}"
 
-[windows]
-build:
-  @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
-  @if (Test-Path {{out_dir_link}}) { Remove-Item -Recurse -Force {{out_dir_link}} | Out-Null }
-  @New-Item -ItemType "directory" -Force -Path "{{out_dir}}"  | Out-Null
-  cargo build {{profile_cargo}} {{target_cargo}}
-  Copy-Item ".\target\.cargo\{{target}}\{{profile}}\{{project_name}}.exe" -Destination "{{out_dir}}" | Out-Null
-  @# New-Item -Path "{{out_dir}}" -ItemType SymbolicLink -Value "{{out_dir_link}}"
-
-[unix]
 run *ARGS:
   just build
-  {{out_dir}}/{{project_name}} {{ARGS}}
-
-[windows]
-run *ARGS:
-  just build
-  {{out_dir}}/{{project_name}}.exe {{ARGS}}
+  {{out_dir}}/{{bin_name}} {{ARGS}}
 
 test:
   cargo test
 
-lint:
-  cargo +nightly clippy -- --deny "warnings"
+format arg="--check":
+  #!/usr/bin/env bash
+  just fmt {{arg}}
+  just lint {{arg}}
 
-lint_fix *ARGS:
-  cargo +nightly clippy --fix --allow-staged -- --deny "warnings"
+fmt arg="--check":
+  #!/usr/bin/env bash
+  args=""
+  while read -r line; do
+    line=$(echo "$line" | tr -d "[:space:]")
+    args="$args --config $line"
+  done < "rust-fmt.toml"
+  args=$(echo "$args" | xargs)
+  if [ "{{arg}}" = "--fix" ]; then
+    cargo fmt -- $args
+  else
+    cargo fmt --check -- $args
+  fi
 
-fmt:
-  cargo +nightly fmt --check
+lint arg="--check":
+  #!/usr/bin/env bash
+  if [ "{{arg}}" = "--fix" ]; then
+    cargo clippy --fix --allow-dirty -- --deny "warnings"
+  else
+    cargo clippy -- --deny "warnings"
+  fi
 
-fmt_fix *ARGS:
-  cargo +nightly fmt
+watch *ARGS:
+  cargo watch --watch src -- just run {{ARGS}}
 
+watch-silent *ARGS:
+  cargo watch -- bash -c "just build && clear; {{out_dir}}/http-server {{ARGS}}"
+
+reinstall:
+  just build
+  cp {{out_dir}}/{{project_name}} $(which http-server-rs)
