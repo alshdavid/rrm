@@ -35,7 +35,7 @@ jobs:
       - run: eval $(curl -sSf sh.davidalsh.com/just.sh | sh)
       - run: eval $(curl -sSf sh.davidalsh.com/rust.sh | sh)
       - run: sudo apt install -y pkg-config libfreetype6-dev libfontconfig1-dev
-      - run: just fmt
+      - run: just fmt --check
         
   lint:
     name: 🤓 Lint
@@ -45,7 +45,7 @@ jobs:
       - run: eval $(curl -sSf sh.davidalsh.com/just.sh | sh)
       - run: eval $(curl -sSf sh.davidalsh.com/rust.sh | sh)
       - run: sudo apt install -y pkg-config libfreetype6-dev libfontconfig1-dev
-      - run: just lint
+      - run: just lint --check
 
   build:
     strategy:

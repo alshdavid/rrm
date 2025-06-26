@@ -106,15 +106,18 @@ fn main() {
     .for_each(|_| {});
 
   println!();
-  print!("Delete matches? ({} found) [y/N] ", matches.len());
-  let mut line = String::new();
-  let _ = std::io::stdout().flush();
-  std::io::stdin().read_line(&mut line).unwrap();
-  line = line.trim().to_string();
 
-  if line != "y" && line != "Y" {
-    println!("Nothing deleted");
-    return;
+  if !cmd.force {
+    print!("Delete matches? ({} found) [y/N] ", matches.len());
+    let mut line = String::new();
+    let _ = std::io::stdout().flush();
+    std::io::stdin().read_line(&mut line).unwrap();
+    line = line.trim().to_string();
+
+    if line != "y" && line != "Y" {
+      println!("Nothing deleted");
+      return;
+    }
   }
 
   for item in matches.iter() {
